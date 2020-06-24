@@ -1,32 +1,30 @@
 const ipLookUp = (() => {
 
-    const getResponse = () => {
+    const getCity = (data) => {
+        return data.city;
+    }
+
+    const getCountry = (data) => {
+        return data.country;
+    }
+
+    const apiCall = () => {
         return fetch('http://ip-api.com/json/')
                .then(resp => resp.json())
+               .then(data => {
+                  return { 
+                    city: getCity(data),
+                    country: getCountry(data)
+                  }
+               })
                .catch(() => {
-                  console.log("Error!! can't get response");
+                  console.error("Error!! can't get response from ip api");
                });
     }
 
-    const getCity = () => {
-        return getResponse()
-        .then(data => data.city)
-        .catch(() => {
-            console.log("Error!! can't get the user city");
-        });
-    }
-
-    const getCountry = () => {
-        return getResponse()
-        .then(data => data.country)
-        .catch(() => {
-            console.log("Error!! can't get the user country");
-        });
-    }
-
     return {
-        getCity,
-        getCountry };
+        apiCall
+    };
 })();
 
 export default ipLookUp;
