@@ -7,8 +7,6 @@
 - Javascript & Webpack
 - Css
 
-## **_[Live Demo]()_**
-
 # Prerequisites
 
 ### ⭐️ Installing Dependencies
