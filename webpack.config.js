@@ -14,16 +14,16 @@ module.exports = {
         test: /\.css$/,
         use: [
           'style-loader',
-          'css-loader'
+          'css-loader',
         ],
       },
-       {
-         test: /\.(png|svg|jpg|gif)$/,
-         loader: 'file-loader',
-         options: {
+      {
+        test: /\.(png|svg|jpg|gif)$/,
+        loader: 'file-loader',
+        options: {
           name: '[name].[ext]',
-         },
-       },
+        },
+      },
     ],
   },
   plugins: [
@@ -35,6 +35,6 @@ module.exports = {
   devServer: {
     contentBase: path.join(__dirname, 'dist'),
     compress: true,
-    port: 3000
-  }
+    port: 3000,
+  },
 };
