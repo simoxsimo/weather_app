@@ -26,7 +26,6 @@ const dom = (() => {
     const createSearchButton = () => {
         selectors.searchButton = document.createElement('button');
         selectors.searchButton.setAttribute('id', 'search');
-        selectors.searchButton.appendChild(document.createTextNode('test'));
         selectors.contentSection.prepend(selectors.searchButton);
    }
 
@@ -37,6 +36,12 @@ const dom = (() => {
                     return data;
                })
                .then(data => storeLocationAtHeader(data))
+    }
+
+    const createBackgroundDiv = () => {
+        const bg = document.createElement('div');
+        bg.setAttribute('id', 'bg');
+        selectors.body.appendChild(bg);
     }
 
     const createWeatherSection = () => {
@@ -185,13 +190,20 @@ const dom = (() => {
     const createSearchField = () => {
         selectors.searchField = document.createElement('input');
         selectors.searchField.setAttribute('type', 'text');
+        selectors.searchField.placeholder = 'Enter a city...'; 
         selectors.contentSection.prepend(selectors.searchField);
+    }
+
+    const animateInput = (input) => {
+        console.log(input);
+        input.style.animation = 'input-animation 0.5s cubic-bezier(0.390, 0.575, 0.565, 1.000) both';
     }
 
     const createSearchFieldMacro = (e) => {
         e.preventDefault();
         if (e.target && e.target.id === 'search' && selectors.searchField === undefined){
             createSearchField();
+            animateInput(selectors.searchField);
         }
         else if (e.target && !(e.target.id === 'search' || e.target.tagName === 'INPUT') && selectors.searchField !== undefined){
             selectors.searchField.remove();
@@ -202,6 +214,7 @@ const dom = (() => {
     const validateInput = (input) => {
         if (!input.value) {
           input.placeholder = 'Please Fill this field';
+          input.style.borderColor = 'red';
           return false;
         }
         return true;
@@ -231,6 +244,7 @@ const dom = (() => {
     const run = () => {
         createContentSection();
         createWeatherSection();
+        createBackgroundDiv();
         weatherAsyncOperations(weatherApi.apiCall(ipLookUpAsyncOperations(ipLookUp.apiCall)));
         searchLocationEvent();
     };
