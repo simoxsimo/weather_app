@@ -164,7 +164,8 @@ input::placeholder {
 
 #celsius-button,
 #fahrenheit-button {
-  border: none;
+  border: 3px solid rgba(226, 225, 225, 0.657);
+  border-radius: 5px;
   background: none;
   font-family: 'Nanum Gothic', sans-serif;
   font-size: 27px;
