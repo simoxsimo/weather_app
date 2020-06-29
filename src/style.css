@@ -20,7 +20,7 @@ p {
   background-color: rgba(87, 86, 86, 0.096);
 }
 
-button {
+#search {
   display: block;
   margin: auto;
   border: none;
@@ -146,4 +146,43 @@ input::placeholder {
   margin-bottom: 0;
   font-size: 28px;
   text-shadow: -6px 0 18px rgba(0, 0, 0, 0.35);
+}
+
+#weather-header {
+  display: flex;
+  justify-content: center;
+}
+
+#temps-btns {
+  display: flex;
+  padding: 10px 0;
+  flex-direction: column;
+  justify-content: space-evenly;
+  margin: 50px 0;
+  margin-left: 30px;
+}
+
+#celsius-button,
+#fahrenheit-button {
+  border: none;
+  background: none;
+  font-family: 'Nanum Gothic', sans-serif;
+  font-size: 27px;
+  font-weight: bolder;
+}
+
+#celsius-button:hover,
+#fahrenheit-button:hover,
+#search:hover {
+  cursor: pointer;
+  color: rgb(75, 75, 75);
+}
+
+h2 {
+  font-size: 40px;
+  text-align: center;
+  color: rgb(211, 49, 49);
+  margin: 20vh 80px;
+  padding: 20px 0;
+  border: 4px solid rgb(195, 132, 132);
 }

@@ -57,9 +57,49 @@ const dom = (() => {
     selectors.weatherSection.appendChild(selectors.weatherTempHeaderDiv);
   };
 
+  const createTempsBtnsDiv = () => {
+    selectors.tempsBtnsDiv = document.createElement('div');
+    selectors.tempsBtnsDiv.setAttribute('id', 'temps-btns');
+    selectors.weatherTempHeaderDiv.appendChild(selectors.tempsBtnsDiv);
+  };
+
+  const createCelsiusButton = () => {
+    selectors.celsiusButton = document.createElement('button');
+    selectors.celsiusButton.setAttribute('id', 'celsius-button');
+    selectors.celsiusButton.appendChild(document.createTextNode('℃'));
+    selectors.tempsBtnsDiv.appendChild(selectors.celsiusButton);
+  };
+
+  const createFahrenheitButton = () => {
+    selectors.fahrenheitButton = document.createElement('button');
+    selectors.fahrenheitButton.setAttribute('id', 'fahrenheit-button');
+    selectors.fahrenheitButton.appendChild(document.createTextNode('℉'));
+    selectors.tempsBtnsDiv.appendChild(selectors.fahrenheitButton);
+  };
+
   const storeWeathertemp = (data) => {
     createWeatherTempHeader(`${Math.round(data.main.temp - 273.15)} ℃`);
+    createTempsBtnsDiv();
+    createCelsiusButton();
+    createFahrenheitButton();
     return data;
+  };
+
+  const rerenderTempsStats = (temp, feelsLike, convertionOffset, tempSymbol) => {
+    selectors.weatherTempHeader.textContent = '';
+    selectors.weatherTempFeelsLike.textContent = '';
+    selectors.weatherTempHeader.appendChild(document.createTextNode(`${Math.round(temp - convertionOffset)} ${tempSymbol}`));
+    selectors.weatherTempFeelsLike.appendChild(document.createTextNode(`Feels Like: ${Math.round(feelsLike - convertionOffset)} ${tempSymbol}`));
+  };
+
+  const celsiusFahrenheitRenderMacro = (data, e) => {
+    if (e.target) {
+      if (e.target.id === 'celsius-button') {
+        rerenderTempsStats(data.main.temp, data.main.feels_like, 273.15, '℃');
+      } else if (e.target.id === 'fahrenheit-button') {
+        rerenderTempsStats(data.main.temp, data.main.feels_like, 255.372, '℉');
+      }
+    }
   };
 
   const createWeatherTempDescription = (data) => {
@@ -181,7 +221,12 @@ const dom = (() => {
     .then(data => storeWeatherDesc(data))
     .then(data => storeWeatherOtherStats(data))
     .then(data => storeWeatherSunTime(data))
-    .then(data => storeWeatherDataTime(data));
+    .then(data => storeWeatherDataTime(data))
+    .then(data => {
+      document.addEventListener('click', (e) => {
+        celsiusFahrenheitRenderMacro(data, e);
+      });
+    });
 
   const createSearchField = () => {
     selectors.searchField = document.createElement('input');
@@ -243,7 +288,9 @@ const dom = (() => {
     weatherAsyncOperations(weatherApi.apiCall(ipLookUpAsyncOperations(ipLookUp.apiCall)));
     searchLocationEvent();
   };
-  return { run };
+  return {
+    run,
+  };
 })();
 
 export default dom;

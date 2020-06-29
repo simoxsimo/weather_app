@@ -1,3 +1,5 @@
+import error from './errors.dom';
+
 const ipLookUp = (() => {
   const getCity = (data) => data.city;
 
@@ -10,8 +12,7 @@ const ipLookUp = (() => {
       country: getCountry(data),
     }))
     .catch(() => {
-      // eslint-disable-next-line no-alert
-      alert("Error!! can't get response from ip api");
+      error.renderErrors("Error!! can't get response from ip api");
     });
 
   return {
