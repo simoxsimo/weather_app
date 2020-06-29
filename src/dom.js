@@ -277,7 +277,7 @@ const dom = (() => {
   };
 
   const searchLocationEvent = () => {
-    document.addEventListener('click', createSearchFieldMacro, { once: true });
+    document.addEventListener('click', createSearchFieldMacro);
     document.addEventListener('keyup', searchLocationMacro);
   };
 
