@@ -13,9 +13,11 @@ const dom = (() => {
   };
 
   const createLocationHeader = (data) => {
-    selectors.locationHeader = document.createElement('h3');
-    selectors.locationHeader.appendChild(document.createTextNode(data));
-    selectors.contentSection.prepend(selectors.locationHeader);
+    if (!selectors.locationHeader) {
+      selectors.locationHeader = document.createElement('h3');
+      selectors.locationHeader.appendChild(document.createTextNode(data));
+      selectors.contentSection.prepend(selectors.locationHeader);
+    }
   };
 
   const storeLocationAtHeader = (data) => {
@@ -24,9 +26,11 @@ const dom = (() => {
   };
 
   const createSearchButton = () => {
-    selectors.searchButton = document.createElement('button');
-    selectors.searchButton.setAttribute('id', 'search');
-    selectors.contentSection.prepend(selectors.searchButton);
+    if (!selectors.searchButton) {
+      selectors.searchButton = document.createElement('button');
+      selectors.searchButton.setAttribute('id', 'search');
+      selectors.contentSection.prepend(selectors.searchButton);
+    }
   };
 
   const ipLookUpAsyncOperations = (promise) => promise()
@@ -77,29 +81,16 @@ const dom = (() => {
     selectors.tempsBtnsDiv.appendChild(selectors.fahrenheitButton);
   };
 
-  const storeWeathertemp = (data) => {
-    createWeatherTempHeader(`${Math.round(data.main.temp - 273.15)} ℃`);
+  const storeWeathertemp = (data, tempSymbol) => {
+    createWeatherTempHeader(`${Math.round(data.main.temp)} ${tempSymbol}`);
     createTempsBtnsDiv();
     createCelsiusButton();
     createFahrenheitButton();
     return data;
   };
 
-  const rerenderTempsStats = (temp, feelsLike, convertionOffset, tempSymbol) => {
-    selectors.weatherTempHeader.textContent = '';
-    selectors.weatherTempFeelsLike.textContent = '';
-    selectors.weatherTempHeader.appendChild(document.createTextNode(`${Math.round(temp - convertionOffset)} ${tempSymbol}`));
-    selectors.weatherTempFeelsLike.appendChild(document.createTextNode(`Feels Like: ${Math.round(feelsLike - convertionOffset)} ${tempSymbol}`));
-  };
-
-  const celsiusFahrenheitRenderMacro = (data, e) => {
-    if (e.target) {
-      if (e.target.id === 'celsius-button') {
-        rerenderTempsStats(data.main.temp, data.main.feels_like, 273.15, '℃');
-      } else if (e.target.id === 'fahrenheit-button') {
-        rerenderTempsStats(data.main.temp, data.main.feels_like, 255.372, '℉');
-      }
-    }
+  const refreshTempStats = () => {
+    selectors.weatherSection.textContent = '';
   };
 
   const createWeatherTempDescription = (data) => {
@@ -119,14 +110,14 @@ const dom = (() => {
     selectors.weatherSection.appendChild(selectors.weatherTempOtherStatsDiv);
   };
 
-  const createWeatherTempFeelsLike = (data) => {
+  const createWeatherTempFeelsLike = (data, tempSymbol) => {
     selectors.weatherTempFeelsLike = document.createElement('p');
-    selectors.weatherTempFeelsLike.appendChild(document.createTextNode(`Feels Like: ${Math.round(data - 273.15)} ℃`));
+    selectors.weatherTempFeelsLike.appendChild(document.createTextNode(`Feels Like: ${Math.round(data)} ${tempSymbol}`));
     selectors.weatherTempOtherStatsDiv.appendChild(selectors.weatherTempFeelsLike);
   };
 
-  const storeWeatherTempFeelsLike = (data) => {
-    createWeatherTempFeelsLike(data.main.feels_like);
+  const storeWeatherTempFeelsLike = (data, tempSymbol) => {
+    createWeatherTempFeelsLike(data.main.feels_like, tempSymbol);
     return data;
   };
 
@@ -163,9 +154,9 @@ const dom = (() => {
     return data;
   };
 
-  const storeWeatherOtherStats = (data) => {
+  const storeWeatherOtherStats = (data, tempSymbol) => {
     createWeatherOtherStatsDiv();
-    storeWeatherTempFeelsLike(data);
+    storeWeatherTempFeelsLike(data, tempSymbol);
     storeWeatherPressure(data);
     storeWeatherHumidity(data);
     storeWeatherWindSpeed(data);
@@ -216,16 +207,25 @@ const dom = (() => {
     return data;
   };
 
-  const weatherAsyncOperations = (promise) => promise
-    .then(data => storeWeathertemp(data))
+  const weatherAsyncOperations = (promise, tempSymbol = '℃') => promise
+    .then(data => storeWeathertemp(data, tempSymbol))
     .then(data => storeWeatherDesc(data))
-    .then(data => storeWeatherOtherStats(data))
+    .then(data => storeWeatherOtherStats(data, tempSymbol))
     .then(data => storeWeatherSunTime(data))
     .then(data => storeWeatherDataTime(data))
     .then(data => {
       document.addEventListener('click', (e) => {
-        celsiusFahrenheitRenderMacro(data, e);
-      });
+        if (e.target) {
+          if (e.target.id === 'celsius-button') {
+            refreshTempStats();
+            weatherAsyncOperations(weatherApi.apiCall(ipLookUpAsyncOperations(ipLookUp.apiCall)));
+          } else if (e.target.id === 'fahrenheit-button') {
+            refreshTempStats();
+            weatherAsyncOperations(weatherApi.apiCall(ipLookUpAsyncOperations(ipLookUp.apiCall), 'imperial'), '℉');
+          }
+        }
+      }, { once: true });
+      return data;
     });
 
   const createSearchField = () => {
@@ -277,7 +277,7 @@ const dom = (() => {
   };
 
   const searchLocationEvent = () => {
-    document.addEventListener('click', createSearchFieldMacro);
+    document.addEventListener('click', createSearchFieldMacro, { once: true });
     document.addEventListener('keyup', searchLocationMacro);
   };
 
