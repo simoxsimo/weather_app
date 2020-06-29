@@ -48,6 +48,13 @@ const dom = (() => {
     selectors.contentSection.prepend(selectors.weatherSection);
   };
 
+  const createWeatherIconDiv = (iconCode) => {
+    selectors.weatherIconDiv = document.createElement('div');
+    selectors.weatherIconDiv.setAttribute('id', 'weather-icon');
+    selectors.weatherIconDiv.style.background = `url(http://openweathermap.org/img/wn/${iconCode}@2x.png)`;
+    selectors.weatherTempHeaderDiv.prepend(selectors.weatherIconDiv);
+  };
+
   const createWeatherTempHeader = (data) => {
     selectors.weatherTempHeaderDiv = document.createElement('div');
     selectors.weatherTempHeader = document.createElement('h1');
@@ -80,6 +87,7 @@ const dom = (() => {
   const storeWeathertemp = (data) => {
     createWeatherTempHeader(`${Math.round(data.main.temp - 273.15)} ℃`);
     createTempsBtnsDiv();
+    createWeatherIconDiv(data.weather[0].icon);
     createCelsiusButton();
     createFahrenheitButton();
     return data;
